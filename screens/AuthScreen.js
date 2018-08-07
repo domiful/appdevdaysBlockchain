@@ -8,7 +8,7 @@ import Spacer from './Spacer';
 import { NavigationActions } from 'react-navigation';
 
 const navigateAction = NavigationActions.navigate({
-  routeName: 'Home',
+  routeName: 'Veh',
 });
 
 class AuthScreen extends React.Component {
@@ -17,8 +17,6 @@ class AuthScreen extends React.Component {
       email: PropTypes.string,
     }),
     error: PropTypes.string,
-    loading: PropTypes.bool.isRequired,
-    onFormSubmit: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
@@ -62,6 +60,7 @@ class AuthScreen extends React.Component {
     this.props.navigation.dispatch(navigateAction);
     if(this.state.email === "amy.marlin" && this.state.password === "Mobile1*"){
       //Actions.popTo('recipes');
+      console.log('still works');
     }
   }
 
@@ -88,14 +87,14 @@ class AuthScreen extends React.Component {
                 autoCapitalize="none"
                 value={this.state.email}
                 keyboardType="email-address"
-                onChangeText={v => this.handleChange('email', v)}
+                //onChangeText={v => this.handleChange('email', v)}
               />
             </Item>
             <Item stackedLabel>
               <Label>Password</Label>
               <Input
                 secureTextEntry
-                onChangeText={v => this.handleChange('password', v)}
+                //onChangeText={v => this.handleChange('password', v)}
               />
             </Item>
 
