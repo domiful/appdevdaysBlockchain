@@ -40,7 +40,6 @@ class Vehicles extends React.Component {
         super(props);
         this.state = {
           cars: [],
-          //carsSearch: this.props.cars,
           token: null,
           refreshing: false,
           carSearch: [],
@@ -96,14 +95,22 @@ class Vehicles extends React.Component {
     }
 
     changeText = (e) =>{
+      const that = this;
+      let carFound = [];
         this.state.cars.forEach((c)=>{
-          if(e.toUpperCase()===c.vin.toUpperCase()){
-            let carFound = [];
+          //console.log(c.vin+":  "+e);
+          if(e===c.vin){
             carFound.push(c);
-            this.setState({carSearch:carFound});
-          }else if(this.state.carSearch.length>0)this.setState({carSearch:[]});
-          else this.setState({carSearch:[]});
+            console.log(carFound);
+          }
         });
+
+        if(carFound){
+          this.setState({carSearch:carFound},()=>{return true});
+          console.log('found');
+        }else this.setState({carSearch:[]});
+        console.log(this.state.carSearch);
+
   }
 
   handleChange = (name, val) => {
@@ -144,9 +151,9 @@ class Vehicles extends React.Component {
             />
             <FlatList
               numColumns={1}
-              data={this.state.cars}
+              data={this.state.carSearch}
               extraData={
-                this.state.cars
+                this.state.carSearch
               }
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => onPress(item)} style={{ flex: 1 }}>
