@@ -68,7 +68,7 @@ class Vehicles extends React.Component {
                 vehicle.image = 'http://img2.netcarshow.com/Bugatti-Chiron_2017_800x600_wallpaper_02.jpg';
                 vehicle.model = 'chiron'
               }else if(vehicle.model==='veyron'){
-                vehicle.image = 'https://imgct2.aeplcdn.com/img/800x600/car-data/big/bugatti-veyron-image-9621.png?v=27';
+                vehicle.image = 'https://hips.hearstapps.com/amv-prod-cad-assets.s3.amazonaws.com/media/assets/submodel/7061.jpg';
               }else if(vehicle.model==='c class'){
                 vehicle.image = 'https://pictures.topspeed.com/IMG/crop/201802/2018-mercedes-benz-c-clas-27_800x0w.jpg';
               }else{
@@ -137,7 +137,7 @@ class Vehicles extends React.Component {
             />
           }
           padder>
-          <Image source={{ uri: 'http://www.aljanh.net/data/archive/img/3172216525.png' }} style={{ height: 256, width: null, flex: 1 }} />
+          <Image source={{ uri: 'http://worldartsme.com/images/bugatti-clipart-1.jpg' }} style={{ height: 128, width: null, flex: 1, marginTop: 50, marginBottom: 30 }} />
 
           <SearchBar
             ref={search => this.search = search}
@@ -175,6 +175,8 @@ class Vehicles extends React.Component {
                       <Text style={{ fontWeight: '600', color:'#455d7a' }}>Model: {item.model.toUpperCase()}</Text>
                       <Spacer size={0} />
                       <Text style={{ fontWeight: '600', color:'#455d7a' }}>Owner: {item.owner.toUpperCase()}</Text>
+                      <Spacer size={0} />
+                      <Text style={{ fontWeight: '600', color:'#455d7a' }}>VIN: {item.vin}</Text>
                       <Spacer size={15} />
                     </Body>
                   </CardItem>

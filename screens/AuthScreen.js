@@ -5,11 +5,13 @@ import Loading from './Loading';
 import Messages from './Messages';
 import Header from './Header';
 import Spacer from './Spacer';
+import {Image} from 'react-native';
 import { NavigationActions } from 'react-navigation';
 
-const navigateAction = NavigationActions.navigate({
-  routeName: 'Veh',
-});
+
+
+
+
 
 class AuthScreen extends React.Component {
   static propTypes = {
@@ -57,7 +59,10 @@ class AuthScreen extends React.Component {
     //this.props.onFormSubmit(this.state)
     //  .then(() => Actions.tabbar())
     //  .catch(e => console.log(`Error: ${e}`));
-    this.props.navigation.dispatch(navigateAction);
+    this.props.navigation.dispatch(NavigationActions.navigate({
+        routeName: 'Veh',
+        params: { assembler: this.state.name },
+      }));
     if(this.state.email === "amy.marlin" && this.state.password === "Mobile1*"){
       //Actions.popTo('recipes');
       console.log('still works');
@@ -73,10 +78,12 @@ class AuthScreen extends React.Component {
     return (
       <Container  style={{backgroundColor:'#eff0f4'}}>
         <Content padder>
-          <Header
+        <Image source={{ uri: 'http://worldartsme.com/images/bugatti-clipart-1.jpg' }} style={{ height: 128, width: null, flex: 1, marginTop: 50 }} />
+        
+        <Header
             title="Welcome back"
             content="Please use your email and password to login."
-          />
+        />
 
           {error && <Messages message={error} />}
 
@@ -87,7 +94,7 @@ class AuthScreen extends React.Component {
                 autoCapitalize="none"
                 value={this.state.email}
                 keyboardType="email-address"
-                //onChangeText={v => this.handleChange('email', v)}
+                onChangeText={v => this.setState({name:v})}
               />
             </Item>
             <Item stackedLabel>

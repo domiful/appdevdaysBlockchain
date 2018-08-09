@@ -82,7 +82,7 @@ class Vehicle extends React.Component {
                 veh.image = 'http://img2.netcarshow.com/Bugatti-Chiron_2017_800x600_wallpaper_02.jpg';
                 veh.model = 'chiron'
               }else if(veh.model==='veyron'){
-                veh.image = 'https://imgct2.aeplcdn.com/img/800x600/car-data/big/bugatti-veyron-image-9621.png?v=27';
+                veh.image = 'https://hips.hearstapps.com/amv-prod-cad-assets.s3.amazonaws.com/media/assets/submodel/7061.jpg';
               }else if(veh.model==='c class'){
                 veh.image = 'https://pictures.topspeed.com/IMG/crop/201802/2018-mercedes-benz-c-clas-27_800x0w.jpg';
               }else{
@@ -164,7 +164,11 @@ class Vehicle extends React.Component {
             ));
         }
         if(o){
-            o.slice(0).reverse().forEach(item => owners.push({title: item['Timestamp'], content: JSON.stringify(item['Value'])}));
+            o.slice(0).reverse().forEach(item => {
+
+                let newBlockRecord = item['Txid']+{"\n"}+""
+                owners.push({title: item['Timestamp'], content: JSON.stringify(item['Value'])});
+            });
             console.log(o);
         }
         
