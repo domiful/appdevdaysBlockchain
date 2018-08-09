@@ -1,15 +1,15 @@
 import React from 'react';
-import { FlatList, TouchableOpacity, RefreshControl, Image } from 'react-native';
+import { FlatList, TouchableOpacity, RefreshControl, Image, Alert, } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import PropTypes from 'prop-types';
-import { Container, Content, Card, CardItem, Body, Text, Button, H1, Right, Left, H3, List, ListItem, Icon, } from 'native-base';
+import { Container, Content, Card, CardItem, Body, Text, Button, H1, Right, Left, H3, List, ListItem, Icon, Form, Item, Picker, Label, Input, Spinner, Accordion} from 'native-base';
 //import DialogInput from 'react-native-dialog-input';
 import Modal from 'react-native-modal';
 import Messages from './Messages';
 import Header from './Header';
 import Spacer from './Spacer';
 import Error from './Error';
-import {getVehicle, getVehicleHistory} from '../actions/blockchain';
+import {getVehicle, getVehicleHistory, addCertifiedPart} from '../actions/blockchain';
 const navigateAction = NavigationActions.navigate({
   routeName: 'Home',
 });
@@ -46,8 +46,11 @@ class Vehicle extends React.Component {
           token: null,
           refreshing: false,
           vin: this.props.navigation.state.params.vin,
+          partType:'',
+          partSN:'',
+          partMech:'Dom Raymond',
+          loading:false
         };
-    
       }
     
       componentDidMount = () => this.fetchCar();
@@ -66,16 +69,13 @@ class Vehicle extends React.Component {
           .then((r)=>{
             getVehicleHistory(this.state.vin)
             .then((r)=>{
-                console.log(r);
                 let his = JSON.parse(r.data.result);
                 this.setState({history: his});
             }).catch((err) => {
                 console.log(`Error: ${err}`);
                 return this.props.setError(err);
             });
-            console.log(r);
             let veh = JSON.parse(r.data.result);
-            console.log(veh);
 
             
               if(veh.model==='2'){
@@ -99,7 +99,6 @@ class Vehicle extends React.Component {
     
     _onRefresh() {
       this.setState({refreshing: true},()=>{
-        console.log('r');
         this.fetchCar().then(() => {
           this.setState({refreshing: false});
         });
@@ -114,8 +113,29 @@ class Vehicle extends React.Component {
     });
   }
 
-  addNote = () => {
+  addPart = () => {
 
+    let timestamp = Math.floor(Date.now() / 1000).toString();
+    let message = {
+        "chaincode": "dmvcc",
+        "channel": "mychannel",
+        "method": "addPart",
+        "args": [
+            this.state.vin, // vin of the vehicle
+            this.state.partType, // name of the part
+            this.state.partSN, // serial number of the part
+            this.state.partMech, // the name of the person that assembled the part to the vehicle
+            timestamp// the unix timestamp of the time that the part was assembled to the vehicle
+        ],
+        "chaincodeVer": "v1"
+    }
+    
+    this.setState({loading:true});
+    addCertifiedPart(message).then((r)=>{
+        this.setState({nm:false});
+        this.setState({loading:false});
+        this._onRefresh();
+    });
   }
 
   openWallet(){
@@ -125,30 +145,27 @@ class Vehicle extends React.Component {
 
   render() {
     var parts = null;
-    var owners = null;
+    var owners = [];
     if (!this.state.car) {
 
         this.fetchCar();
         return <Error title='loading' content='data' />;
     }else{
-        let m = this.state.car.maintenanceLog;
+        let m = this.state.car.parts;
         let o = this.state.history;
 
         //console.log(this.state.car);
         
         if(m){
-            parts = m.map(item => (
+            parts = m.slice(0).reverse().map(item => (
                 <ListItem key={item.timestamp} rightIcon={{ style: { opacity: 0 } }}>
-                    <Text>Date: {new Date(item.timestamp).toDateString()}{"\n"}Message: {item.description}</Text>
+                    <Text>Date: {new Date(item.timestamp).toDateString()}{"\n"}Part: {item.name}{"\n"}SN: {item.serialNumber}{"\n"}Assembler: {item.assembler}</Text>
                 </ListItem>
             ));
         }
         if(o){
-            owners = o.map(item => (
-                <ListItem key={item['Timestamp']} rightIcon={{ style: { opacity: 0 } }}>
-                <Text>Date: {new Date(item['Timestamp']).toDateString()}{"\n"}Owner: {item['Value']['owner']}</Text>
-                </ListItem>
-            ));
+            o.slice(0).reverse().forEach(item => owners.push({title: item['Timestamp'], content: JSON.stringify(item['Value'])}));
+            console.log(o);
         }
         
     }
@@ -157,14 +174,19 @@ class Vehicle extends React.Component {
     
       return (
         <Container style={{backgroundColor:'#eff0f4'}}>
-          <Content padder>
+          <Content padder
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh.bind(this)}
+            />
+          }
+          >
             <Image source={{ uri: this.state.car.image }} style={{ height: 200, width: null, flex: 1 }} />
     
-            <Header
-                title={this.state.car.make}
-                content={this.state.car.model}
-                style={{marginLeft:50}}
-            />
+            <H1 style={{padding: 20, fontStyle: 'italic', color: '#455d7a', fontWeight:'900'}}>
+                {this.state.car.make + " " +this.state.car.model}
+            </H1>
             <Card>
               <CardItem header bordered >
                 <Text style={{fontWeight:'bold', color:'#455d7a'}}>Information</Text>
@@ -188,17 +210,6 @@ class Vehicle extends React.Component {
             </Card>
 
             <Card>
-              <CardItem header bordered>
-                <Text style={{fontWeight:'bold', color:'#455d7a'}}>Owner Records</Text>
-              </CardItem>
-              <CardItem>
-                <Content>
-                  <List>{owners}</List>
-                </Content>
-              </CardItem>
-            </Card>
-    
-            <Card>
               <CardItem header bordered >
                 <Text style={{fontWeight:'bold', color:'#455d7a'}}>Certified Repair Log</Text>
                 <Right>
@@ -215,39 +226,73 @@ class Vehicle extends React.Component {
                 </Content>
               </CardItem>
             </Card>
+            <Card>
+              <CardItem header bordered>
+                <Text style={{fontWeight:'bold', color:'#455d7a'}}>Blockchain Transactions</Text>
+              </CardItem>
+              <CardItem>
+                <Content>
+                <Accordion dataArray={owners} expanded={0}/>
+                </Content>
+              </CardItem>
+            </Card>
 
             
     
     
             <Spacer size={20} />
           </Content>
-          <Modal isVisible={this.state.nm}>
-      <Container>
-          <Content>
-          <Header
-          title="Add Part"
-          //content={this.state.car.model}
-          style={{backgroundColor:"#0074e4", height: 200, textAlign:'center'}}
-  />
-            <Card  style={{marginTop:50, marginLeft: 10, marginRight:10}}>
-              
-              <CardItem button onPress={() => this.openWallet()}>
-                <Body>
-                <Image
-                style={{width: "100%", height: 200}}
-                source={{uri: 'https://cdn.dribbble.com/users/315048/screenshots/3710002/check.gif'}}
-                  />
-                </Body>
-              </CardItem>
-              <CardItem footer button onPress={() => this.openWallet()}>
-                <Body>
-                  <Text>CHECK IN!</Text>
-                </Body>
-              </CardItem>
-              
-            </Card>
-          </Content>
-          </Container>
+          <Modal 
+            isVisible={this.state.nm}
+            onBackdropPress={() => this.setState({ nm: false })}
+            onSwipe={() => this.setState({ isVisible: false })}
+            swipeDirection="down"
+            animationIn="slideInUp"
+            animationOut="slideOutDown"
+          >
+          {this.state.loading ? <Card><Spinner color='blue' /></Card> :
+          <Card>
+            <CardItem header >
+                <H3 style={{fontWeight:'bold', color:'#455d7a'}}>Add Certified Part</H3>
+            </CardItem>
+            <CardItem>
+                <Form style={{flex:1}}>
+                <Item stackedLabel>
+                  <Label>VIN:</Label>
+                  <Input disabled placeholder={this.state.car.vin}/>
+                </Item>
+                <Item picker>
+                    <Picker
+                        mode="dropdown"
+                        iosIcon={<Icon name="ios-arrow-down-outline" />}
+                        style={{ width: undefined }}
+                        placeholder="Please select part"
+                        placeholderStyle={{color:'#264e86'}}
+                        placeholderIconColor="#007aff"
+                        selectedValue={this.state.partType}
+                        onValueChange={(e)=>this.setState({partType:e})}
+                    >
+                        <Picker.Item label="Airbag" value="bugattiAirbag" />
+                        <Picker.Item label="Brake Pads" value="bugattiBreakPads" />
+                        <Picker.Item label="Tires" value="bugattiTires" />
+                        <Picker.Item label="Oil Filter" value="bugattiOilFilter" />
+                        <Picker.Item label="Fluids" value="bugattiOilChange" />
+                    </Picker>
+                </Item>
+                <Item stackedLabel>
+                  <Label>Serial Number:</Label>
+                  <Input onChangeText={(e)=>this.setState({partSN: e})}/>
+                </Item>
+                <Item stackedLabel last>
+                  <Label>Assembler:</Label>
+                  <Input onChangeText={(e)=>this.setState({partMech:e})} placeholder="Dom Raymond"/>
+                </Item>
+              </Form>
+            </CardItem>
+            <CardItem footer button onPress={() => this.addPart()}>
+                <Right><H3 style={{color:'#264e86'}}>Submit</H3></Right>
+            </CardItem>
+        </Card>}
       </Modal>
         </Container>
 

@@ -2,7 +2,8 @@ import axios from 'axios';
 
 
 
-const endpoint = "http://129.213.17.138:4001/bcsgw/rest/v1/transaction/query";
+const endpoint = "http://129.213.53.222:4001/bcsgw/rest/v1/transaction/query";
+const addEndpoint = "http://129.213.53.222:4001/bcsgw/rest/v1/transaction/invocation";
 
 //For if this were actually secured
 //const aToken = "Basic Y2xvdWQuYWRtaW46bG9vc0VANkRPdUJMZQ==";
@@ -132,4 +133,18 @@ export async function getVehicleHistory(vin) {
         console.log(error);
         return false;
       });
+}
+
+export async function addCertifiedPart(message){
+
+  console.log(message);
+  return axios.post(addEndpoint, message)//, auth)
+    .then(function (response) {
+        console.log(response);
+        return response;
+    })
+    .catch(function (error) {
+      console.log(error);
+      return false;
+    });
 }

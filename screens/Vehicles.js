@@ -26,7 +26,7 @@ class Vehicles extends React.Component {
       }
 
       static navigationOptions = {
-        title: 'Vehicles',
+        title: 'Search Vehicles',
         headerStyle: {
             backgroundColor: '#0074e4',
           },
@@ -127,9 +127,6 @@ class Vehicles extends React.Component {
       params: { vin: String(item.vin) },
     }));
 
-
-    console.log(this.state.cars);
-
     return (
       <Container  style={{backgroundColor:'#eff0f4'}}>
         <Content 
@@ -140,6 +137,8 @@ class Vehicles extends React.Component {
             />
           }
           padder>
+          <Image source={{ uri: 'http://www.aljanh.net/data/archive/img/3172216525.png' }} style={{ height: 256, width: null, flex: 1 }} />
+
           <SearchBar
             ref={search => this.search = search}
             lightTheme
@@ -172,12 +171,11 @@ class Vehicles extends React.Component {
                     <Body style={{paddingLeft:10}}>
                       <Spacer size={10} />
                       <Text style={{ fontWeight: '600' }}>Make: {item.make.toUpperCase()}</Text>
-                      <Spacer size={10} />
-                      <Text style={{ fontWeight: '600' }}>Model: {item.model.toUpperCase()}</Text>
-                      <Spacer size={10} />
-                      <Text style={{ fontWeight: '600' }}>Owner: {item.owner.toUpperCase()}</Text>
+                      <Spacer size={0} />
+                      <Text style={{ fontWeight: '600', color:'#455d7a' }}>Model: {item.model.toUpperCase()}</Text>
+                      <Spacer size={0} />
+                      <Text style={{ fontWeight: '600', color:'#455d7a' }}>Owner: {item.owner.toUpperCase()}</Text>
                       <Spacer size={15} />
-                      <Spacer size={5} />
                     </Body>
                   </CardItem>
 
