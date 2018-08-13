@@ -61,8 +61,8 @@ class AuthScreen extends React.Component {
     //  .catch(e => console.log(`Error: ${e}`));
     this.props.navigation.dispatch(NavigationActions.navigate({
         routeName: 'Veh',
-        params: { assembler: this.state.name },
-      }));
+        params: { assembler: this.state.email},
+    }));
     if(this.state.email === "amy.marlin" && this.state.password === "Mobile1*"){
       //Actions.popTo('recipes');
       console.log('still works');
@@ -94,7 +94,7 @@ class AuthScreen extends React.Component {
                 autoCapitalize="none"
                 value={this.state.email}
                 keyboardType="email-address"
-                onChangeText={v => this.setState({name:v})}
+                onChangeText={v => this.setState({email:v})}
               />
             </Item>
             <Item stackedLabel>

@@ -2,7 +2,7 @@ import React from 'react';
 import { FlatList, TouchableOpacity, RefreshControl, Image } from 'react-native';
 import { NavigationActions } from 'react-navigation';
 import PropTypes from 'prop-types';
-import { Container, Content, Card, CardItem, Body, Text, Button, H1, Right, Left } from 'native-base';
+import { Container, Content, Card, CardItem, Body, Text, Button, H1, Right, Left, Icon } from 'native-base';
 import { SearchBar } from 'react-native-elements';
 import Messages from './Messages';
 import Header from './Header';
@@ -11,6 +11,10 @@ import {listAllVehicles, listDealerVehicles} from '../actions/blockchain';
 
 const navigateAction = NavigationActions.navigate({
   routeName: 'Car',
+});
+
+const navigateAuth = NavigationActions.navigate({
+  routeName: 'Auth',
 });
 
 class Vehicles extends React.Component {
@@ -25,16 +29,24 @@ class Vehicles extends React.Component {
         reFetch: null,
       }
 
-      static navigationOptions = {
+      static navigationOptions = ({ navigation }) => {
+        return {
         title: 'Search Vehicles',
         headerStyle: {
             backgroundColor: '#0074e4',
           },
-          headerTintColor: '#eff0f4',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+        headerTintColor: '#eff0f4',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+        headerLeft: (
+            <Icon name='log-out' onPress={() => navigation.dispatch(navigateAuth)} style={{color:'white', marginLeft: 10}} />
+    
+        ),
+
+        
       };
+    };
     
       constructor(props) {
         super(props);
@@ -124,7 +136,7 @@ class Vehicles extends React.Component {
     const keyExtractor = item => item.vin;
     const onPress = item => this.props.navigation.dispatch(NavigationActions.navigate({
       routeName: 'Car',
-      params: { vin: String(item.vin) },
+      params: { vin: String(item.vin), assembler: this.props.navigation.getParam('assembler', 'Assembler 1045') },
     }));
 
     return (
@@ -138,7 +150,10 @@ class Vehicles extends React.Component {
           }
           padder>
           <Image source={{ uri: 'http://worldartsme.com/images/bugatti-clipart-1.jpg' }} style={{ height: 128, width: null, flex: 1, marginTop: 50, marginBottom: 30 }} />
-
+          <Header
+              title="Xenneco"
+              content="Certified Manufacturer"
+          />
           <SearchBar
             ref={search => this.search = search}
             lightTheme
@@ -147,6 +162,7 @@ class Vehicles extends React.Component {
             onChangeText={this.changeText}
             placeholder='Search'
             onClear={()=>{}}
+            autoCapitalize='none'
             />
             <FlatList
               numColumns={1}

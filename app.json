@@ -21,7 +21,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oracle.BlockChainAppADD"
+    },
+    "android": {
+      "package": "com.oracle.BlockChainAppADD"
     }
   }
 }

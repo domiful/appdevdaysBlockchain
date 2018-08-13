@@ -165,11 +165,19 @@ class Vehicle extends React.Component {
         }
         if(o){
             o.slice(0).reverse().forEach(item => {
-
-                let newBlockRecord = item['Txid']+{"\n"}+""
-                owners.push({title: item['Timestamp'], content: JSON.stringify(item['Value'])});
+                var newBlockRecord = null;
+                if(item['Value'].parts.length > 0){
+                    let parts = []
+                    item['Value'].parts.forEach((item)=>parts.push(item.name));
+                    newBlockRecord = "Owner: "+ item['Value'].owner + "\nParts:"+JSON.stringify(parts);
+                }else{
+                    newBlockRecord = "Owner: "+ item['Value'].owner;
+                }
+                
+                console.log(JSON.stringify(item['Value'].parts)); 
+                owners.push({title: item['Timestamp'], content: newBlockRecord});
             });
-            console.log(o);
+            //console.log(o);
         }
         
     }
@@ -289,7 +297,7 @@ class Vehicle extends React.Component {
                 </Item>
                 <Item stackedLabel last>
                   <Label>Assembler:</Label>
-                  <Input onChangeText={(e)=>this.setState({partMech:e})} placeholder="Dom Raymond"/>
+                  <Input onChangeText={(e)=>this.setState({partMech:e})} placeholder={this.props.navigation.getParam('assembler', 'Assembler 1045')}/>
                 </Item>
               </Form>
             </CardItem>
