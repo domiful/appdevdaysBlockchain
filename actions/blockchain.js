@@ -2,8 +2,8 @@ import axios from 'axios';
 
 
 
-const endpoint = "http://129.213.53.222:4001/bcsgw/rest/v1/transaction/query";
-const addEndpoint = "http://129.213.53.222:4001/bcsgw/rest/v1/transaction/invocation";
+const endpoint = "http://129.213.17.138:4001/bcsgw/rest/v1/transaction/query";
+const addEndpoint = "http://129.213.17.138:4001/bcsgw/rest/v1/transaction/invocation";
 
 //For if this were actually secured
 //const aToken = "Basic Y2xvdWQuYWRtaW46bG9vc0VANkRPdUJMZQ==";
